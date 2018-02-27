@@ -50,11 +50,10 @@ fn set-gnome-terminal [x]{
   }
 
   local:palette = ''
-  local:rgb = ''
   # Make sure that we iterate over the list in order because gnome-terminal's
   # palette is order dependent.
   for local:i [(range 0 16)] {
-    rgb = $x[$i]
+    local:rgb = $x[$i]
 
     # Allow reassigning values
     if (and (==s (kind-of $rgb) 'string')) {
@@ -90,15 +89,12 @@ fn set-gnome-terminal [x]{
 }
 
 fn set-x11 [x]{
-  local:rgb = ''
-  local:hex = ''
-
   for local:i [(keys $x)] {
     if (or (< $i 0) (> $i 15)) {
       fail 'Invalid ANSI color code'
     }
 
-    rgb = $x[$i]
+    local:rgb = $x[$i]
 
     # Allow reassigning values
     if (and (==s (kind-of $rgb) 'string')) {
@@ -108,9 +104,9 @@ fn set-x11 [x]{
     -validate-rgb $rgb
 
     # X11 only supports hex
-    hex = (rgb-to-hex $rgb)
+    local:hex = (rgb-to-hex $rgb)
 
-    print "\x1b]4;"$i";rgb:"$hex[1:3]"/"$hex[3:5]"/"$hex[5:7]"\x1b\\"
+    print '\x1b]4;'$i';rgb:'$hex[1:3]'/'$hex[3:5]'/'$hex[5:7]'\x1b\\'
   }
 }
 

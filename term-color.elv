@@ -127,9 +127,7 @@ fn set [x]{
     fail 'invalid'
   }
 
-  if (==s $E:XDG_SESSION_TYPE 'x11') {
-    set-x11 $x
-  }
+  set-x11 $x
 
   # TODO: Attempt to automatically set DBUS_SESSION_BUS_ADDRESS to work even
 #         when displays are not connected.

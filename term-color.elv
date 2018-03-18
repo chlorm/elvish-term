@@ -130,8 +130,8 @@ fn set [x]{
   set-x11 $x
 
   # TODO: Attempt to automatically set DBUS_SESSION_BUS_ADDRESS to work even
-#         when displays are not connected.
-  if (and (has-env DISPLAY) (has-external dconf)) {
+  #         when displays are not connected.
+  if (and (has-env DISPLAY) (has-external gnome-terminal) (has-external dconf)) {
     set-gnome-terminal $x
   }
 }

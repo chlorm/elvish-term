@@ -43,11 +43,12 @@ fn rgb-to-hex [x]{
 }
 
 fn set-gnome-terminal [x]{
-  profile = (dconf list /org/gnome/terminal/legacy/profiles:/)
-  if (==s (kind-of $profile) 'list') {
-    # We don't have a way to differentiate profiles.
+  local:profile = [(dconf list /org/gnome/terminal/legacy/profiles:/)]
+  # We don't have a way to differentiate profiles.
+  if (!= (count $profile) 1) {
     return
   }
+  profile = $profile[0]
 
   local:palette = ''
   # Make sure that we iterate over the list in order because gnome-terminal's

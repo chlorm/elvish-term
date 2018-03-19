@@ -107,12 +107,12 @@ fn set-x11 [x]{
     # X11 only supports hex
     local:hex = (rgb-to-hex $rgb)
 
-    print "\x1b]4;"$i";rgb:"$hex[1:3]"/"$hex[3:5]"/"$hex[5:7]"\a"
+    print "\033]4;"$i";rgb:"$hex[1:3]"/"$hex[3:5]"/"$hex[5:7]"\a"
   }
 }
 
 fn reset-x11 {
-  print "\x1b]104\a"
+  print "\033]104\a"
 }
 
 # Defines terminals colors used by ANSI 0-15 color codes.

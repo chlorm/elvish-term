@@ -107,7 +107,7 @@ fn set-x11 [x]{
     # X11 only supports hex
     local:hex = (rgb-to-hex $rgb)
 
-    print "\x1b]4;"$i";rgb:"$hex[1:3]"/"$hex[3:5]"/"$hex[5:7]"\x1b\\"
+    print "\x1b]4;"$i";rgb:"$hex[1:3]"/"$hex[3:5]"/"$hex[5:7]"\a"
   }
 }
 

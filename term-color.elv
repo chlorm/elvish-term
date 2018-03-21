@@ -14,6 +14,10 @@
 
 # Methods for defining the colors used by ANSI 0-15 color codes.
 
+local:valid-keys = [
+  0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 bg fg
+]
+
 fn -validate-rgb [x]{
   for local:i [(keys $x)] {
     if (or (< $x[$i] 0) (> $x[$i] 255)) {
@@ -50,35 +54,37 @@ fn set-gnome-terminal [x]{
   }
   profile = $profile[0]
 
-  local:palette = ''
-  # Make sure that we iterate over the list in order because gnome-terminal's
-  # palette is order dependent.
-  for local:i [(range 0 16)] {
+  local:palette = []
+  for local:i $valid-keys {
     local:rgb = $x[$i]
 
-    # Allow reassigning values
-    if (and (==s (kind-of $rgb) 'string')) {
+    # Allow re-assigning values. Since we only accept RGB as a map,
+    # any string is assumed to be a valid key.
+    if (==s (kind-of $rgb) 'string') {
       rgb = $x[$rgb]
     }
 
-    palette = [ $@palette "'rgb("$rgb[r]','$rgb[g]','$rgb[b]")'" ]
-  }
+    -validate-rgb $rgb
 
-  local:bg = $x[bg]
-  try {
-    dconf write \
-      '/org/gnome/terminal/legacy/profiles:/'$profile'background-color' \
-      "'rgb("$bg[r]','$bg[g]','$bg[b]")'"
-  } except {
-    fail 'dconf failed to set background-color'
-  }
-  local:fg = $x[fg]
-  try {
-    dconf write \
-      '/org/gnome/terminal/legacy/profiles:/'$profile'foreground-color' \
-      "'rgb("$fg[r]','$fg[g]','$fg[b]")'"
-  } except {
-    fail 'dconf failed to set foreground-color'
+    if (==s $i 'bg') {
+      try {
+        dconf write \
+          '/org/gnome/terminal/legacy/profiles:/'$profile'background-color' \
+          "'rgb("$rgb[r]','$rgb[g]','$rgb[b]")'"
+      } except {
+        fail 'dconf failed to set background-color'
+      }
+    } elif (==s $i 'fg') {
+      try {
+        dconf write \
+          '/org/gnome/terminal/legacy/profiles:/'$profile'foreground-color' \
+          "'rgb("$rgb[r]','$rgb[g]','$rgb[b]")'"
+      } except {
+        fail 'dconf failed to set foreground-color'
+      }
+    } else {
+      palette = [ $@palette "'rgb("$rgb[r]','$rgb[g]','$rgb[b]")'" ]
+    }
   }
   try {
     dconf write \
@@ -90,10 +96,11 @@ fn set-gnome-terminal [x]{
 }
 
 fn set-x11 [x]{
-  for local:i [(range 0 16)] {
+  for local:i $valid-keys {
     local:rgb = $x[$i]
 
-    # Allow reassigning values
+    # Allow re-assigning values. Since we only accept RGB as a map,
+    # any string is assumed to be a valid key.
     if (==s (kind-of $rgb) 'string') {
       rgb = $x[$rgb]
     }
@@ -102,13 +109,16 @@ fn set-x11 [x]{
 
     # X11 only supports hex
     local:hex = (rgb-to-hex $rgb)
-    print "\033]4;"$i";rgb:"$hex[1:3]"/"$hex[3:5]"/"$hex[5:7]"\a"
-  }
+    local:x11 = $hex[1:3]"/"$hex[3:5]"/"$hex[5:7]
 
-  local:bg = (rgb-to-hex $x[bg])
-  print "\033]11;rgb:"$bg[1:3]"/"$bg[3:5]"/"$bg[5:7]"\a"
-  local:fg = (rgb-to-hex $x[fg])
-  print "\033]10;rgb:"$fg[1:3]"/"$fg[3:5]"/"$fg[5:7]"\a"
+    if (==s $i 'bg') {
+      print "\033]11;rgb:"$x11"\a"
+    } elif (==s $i 'fg') {
+      print "\033]10;rgb:"$x11"\a"
+    } else {
+      print "\033]4;"$i";rgb:"$x11"\a"
+    }
+  }
 }
 
 fn reset-x11 {

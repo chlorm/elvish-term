@@ -124,10 +124,6 @@ fn reset-x11 {
 #   &15=6
 # ]
 fn set [x]{
-  if (!= (count $x) 16) {
-    fail 'invalid'
-  }
-
   set-x11 $x
 
   # TODO: Attempt to automatically set DBUS_SESSION_BUS_ADDRESS to work even

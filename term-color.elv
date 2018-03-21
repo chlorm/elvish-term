@@ -64,7 +64,7 @@ fn set-gnome-terminal [x]{
     palette = [ $@palette "'rgb("$rgb[r]','$rgb[g]','$rgb[b]")'" ]
   }
 
-  local:bg = $x[0]
+  local:bg = $x[bg]
   try {
     dconf write \
       '/org/gnome/terminal/legacy/profiles:/'$profile'background-color' \
@@ -72,7 +72,7 @@ fn set-gnome-terminal [x]{
   } except {
     fail 'dconf failed to set background-color'
   }
-  local:fg = $x[15]
+  local:fg = $x[fg]
   try {
     dconf write \
       '/org/gnome/terminal/legacy/profiles:/'$profile'foreground-color' \
@@ -90,11 +90,7 @@ fn set-gnome-terminal [x]{
 }
 
 fn set-x11 [x]{
-  for local:i [(keys $x)] {
-    if (or (< $i 0) (> $i 15)) {
-      fail 'Invalid ANSI color code'
-    }
-
+  for local:i [(range 0 16)] {
     local:rgb = $x[$i]
 
     # Allow reassigning values
@@ -106,9 +102,13 @@ fn set-x11 [x]{
 
     # X11 only supports hex
     local:hex = (rgb-to-hex $rgb)
-
     print "\033]4;"$i";rgb:"$hex[1:3]"/"$hex[3:5]"/"$hex[5:7]"\a"
   }
+
+  local:bg = (rgb-to-hex $x[bg])
+  print "\033]11;rgb:"$bg[1:3]"/"$bg[3:5]"/"$bg[5:7]"\a"
+  local:fg = (rgb-to-hex $x[fg])
+  print "\033]10;rgb:"$fg[1:3]"/"$fg[3:5]"/"$fg[5:7]"\a"
 }
 
 fn reset-x11 {

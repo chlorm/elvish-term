@@ -94,7 +94,7 @@ fn set-x11 [x]{
     local:rgb = $x[$i]
 
     # Allow reassigning values
-    if (and (==s (kind-of $rgb) 'string')) {
+    if (==s (kind-of $rgb) 'string') {
       rgb = $x[$rgb]
     }
 

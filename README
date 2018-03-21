@@ -24,6 +24,8 @@ monokai = [
   &13=5
   &14=6
   &15=(term-color:hex-to-rgb '#f8f8f0')
+  &bg=(term-color:hex-to-rgb '#282828')
+  &fg=(term-color:hex-to-rgb '#f8f8f2')
 ]
 
 term-color:set $monokai

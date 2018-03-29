@@ -94,7 +94,7 @@ fn set [x]{
           dconf write \
             '/org/gnome/terminal/legacy/profiles:/'$profile'background-color' \
             "'rgb("$rgb[r]','$rgb[g]','$rgb[b]")'"
-        } except {
+        } except _ {
           fail 'dconf failed to set background-color'
         }
       }
@@ -106,7 +106,7 @@ fn set [x]{
           dconf write \
             '/org/gnome/terminal/legacy/profiles:/'$profile'foreground-color' \
             "'rgb("$rgb[r]','$rgb[g]','$rgb[b]")'"
-        } except {
+        } except _ {
           fail 'dconf failed to set foreground-color'
         }
       }
@@ -124,7 +124,7 @@ fn set [x]{
       dconf write \
         '/org/gnome/terminal/legacy/profiles:/'$profile'palette' \
         '['(joins ', ' $palette)']'
-    } except {
+    } except _ {
       fail 'dconf failed to set palette'
     }
   }

@@ -71,7 +71,7 @@ fn set [x]{
     }
   }
 
-  for local:i [ (range 16) bg fg ] {
+  for local:i [ (range 16 | each [a]{to-string $a}) bg fg ] {
     local:rgb = $x[$i]
 
     # Allow re-assigning values. Since we only accept RGB as a map,

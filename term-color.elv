@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 # Methods for defining the colors used by ANSI 0-15 color codes.
+
 
 fn -validate-rgb [x]{
   for local:i [(keys $x)] {

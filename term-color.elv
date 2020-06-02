@@ -16,6 +16,9 @@
 # Methods for defining the colors used by ANSI 0-15 color codes.
 
 
+use str
+
+
 fn -validate-rgb [x]{
   for local:i [(keys $x)] {
     if (or (< $x[$i] 0) (> $x[$i] 255)) {
@@ -94,7 +97,7 @@ fn -set-gnome-terminal [scheme]{
   try {
     dconf write \
       '/org/gnome/terminal/legacy/profiles:/'$profile'palette' \
-      '['(joins ', ' $palette)']'
+      '['(str:join ', ' $palette)']'
   } except _ {
     fail 'dconf failed to set palette'
   }

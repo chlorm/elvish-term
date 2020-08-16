@@ -29,14 +29,14 @@ fn -validate-rgb [x]{
 
 # Converts hexadecimal to decimal RGB.
 fn hex-to-rgb [x]{
-  if (and (!=s $x[0:1] '#') (== (count $x) 7)) {
+  if (and (!=s $x[0..1] '#') (== (count $x) 7)) {
     fail 'Got a non-hex string'
   }
 
   put [
-    &r=(base 10 '0x'$x[1:3])
-    &g=(base 10 '0x'$x[3:5])
-    &b=(base 10 '0x'$x[5:7])
+    &r=(base 10 '0x'$x[1..3])
+    &g=(base 10 '0x'$x[3..5])
+    &b=(base 10 '0x'$x[5..7])
   ]
 }
 
@@ -104,7 +104,7 @@ fn -set-gnome-terminal [scheme]{
 }
 
 fn -x11-hex [hex]{
-  put $hex[1:3]'/'$hex[3:5]'/'$hex[5:7]
+  put $hex[1..3]'/'$hex[3..5]'/'$hex[5..7]
 }
 
 fn -set-x11 [scheme]{

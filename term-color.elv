@@ -63,7 +63,7 @@ fn reset-x11 {
 }
 
 fn -set-gnome-terminal [scheme]{
-  profile = [(dconf list /org/gnome/terminal/legacy/profiles:/)]
+  profile = [ (e:dconf list '/org/gnome/terminal/legacy/profiles:/') ]
   if (> (count $profile) 1) {
     fail "We don't have a way to differentiate gnome-terminal profiles."
   } else {
@@ -71,15 +71,15 @@ fn -set-gnome-terminal [scheme]{
   }
 
   try {
-    dconf write \
-      '/org/gnome/terminal/legacy/profiles:/'$profile'background-color' \
+    e:dconf write \
+      '/org/gnome/terminal/legacy/profiles:/'$profile'background-color' ^
       "'rgb("$scheme[bg][r]','$scheme[bg][g]','$scheme[bg][b]")'"
   } except _ {
     fail 'dconf failed to set background-color'
   }
   try {
-    dconf write \
-      '/org/gnome/terminal/legacy/profiles:/'$profile'foreground-color' \
+    e:dconf write \
+      '/org/gnome/terminal/legacy/profiles:/'$profile'foreground-color' ^
       "'rgb("$scheme[fg][r]','$scheme[fg][g]','$scheme[fg][b]")'"
   } except _ {
     fail 'dconf failed to set foreground-color'
@@ -95,8 +95,8 @@ fn -set-gnome-terminal [scheme]{
     ]
   }
   try {
-    dconf write \
-      '/org/gnome/terminal/legacy/profiles:/'$profile'palette' \
+    e:dconf write \
+      '/org/gnome/terminal/legacy/profiles:/'$profile'palette' ^
       '['(str:join ', ' $palette)']'
   } except _ {
     fail 'dconf failed to set palette'

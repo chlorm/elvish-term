@@ -20,7 +20,7 @@ use str
 
 
 fn -validate-rgb [x]{
-    for local:i [(keys $x)] {
+    for i [ (keys $x) ] {
         if (or (< $x[$i] 0) (> $x[$i] 255)) {
             fail 'Invalid RGB decimal range'
         }
@@ -41,7 +41,7 @@ fn hex-to-rgb [x]{
 }
 
 fn -base16 [int]{
-    local:b16 = (base 16 $int)
+    b16 = (base 16 $int)
 
     # 00 gets truncated to 0
     if (< (count $b16) 2) {
@@ -84,9 +84,9 @@ fn -set-gnome-terminal [scheme]{
     } except _ {
         fail 'dconf failed to set foreground-color'
     }
-    local:palette = [ ]
-    for local:i [(keys $scheme)] {
-        if (has-value [bg fg] $i) {
+    palette = [ ]
+    for i [ (keys $scheme) ] {
+        if (has-value [ bg fg ] $i) {
             continue
         }
         palette = [
@@ -110,8 +110,8 @@ fn -x11-hex [hex]{
 fn -set-x11 [scheme]{
     print "\033]11;rgb:"(-x11-hex (rgb-to-hex $scheme[bg]))"\a"
     print "\033]10;rgb:"(-x11-hex (rgb-to-hex $scheme[fg]))"\a"
-    for local:i [(keys $scheme)] {
-        if (has-value [bg fg] $i) {
+    for i [ (keys $scheme) ] {
+        if (has-value [ bg fg ] $i) {
             continue
         }
         # X11 only supports hex
@@ -128,47 +128,47 @@ fn -set-x11 [scheme]{
 #   &15=6
 # ]
 fn -eval-color-scheme [scheme]{
-    local:scheme-eval = [&]
-    local:scheme-mapped = [ ]
+    schemeEval = [&]
+    schemeMapped = [ ]
     # Manually define keys to ensure they all exist
-    for local:i [ (range 16 | each [a]{to-string $a}) bg fg ] {
-        local:rgb = $scheme[$i]
+    for i [ (range 16 | each [a]{to-string $a}) bg fg ] {
+        rgb = $scheme[$i]
 
         # Allow re-assigning values. Since we only accept RGB as a map,
         # any string is assumed to be a valid key.
         if (==s (kind-of $rgb) 'string') {
-            scheme-mapped = [ $@scheme-mapped $i ]
+            schemeMapped = [ $@schemeMapped $i ]
             continue
         }
 
         -validate-rgb $rgb
 
-        scheme-eval[$i]=$rgb
+        schemeEval[$i] = $rgb
     }
     # Mapped assignments have to be processed after their targets have been
     # eval'd
-    for local:i $scheme-mapped {
-        scheme-eval[$i]=$scheme-eval[$scheme[$i]]
+    for i $schemeMapped {
+        schemeEval[$i] = $schemeEval[$scheme[$i]]
     }
 
-    put $scheme-eval
+    put $schemeEval
 }
 
 fn set [scheme]{
     # TODO: Attempt to automatically set DBUS_SESSION_BUS_ADDRESS to work even
     #       when displays are not connected.
-    local:gnome-terminal = $false
+    gnomeTerminal = $false
     if (and (has-env DISPLAY) ^
             (has-external gnome-terminal) ^
             (has-external dconf)) {
-        gnome-terminal = $true
+        gnomeTerminal = $true
     }
 
-    local:scheme-eval = (-eval-color-scheme $scheme)
-    -set-x11 $scheme-eval
-    if $gnome-terminal {
+    schemeEval = (-eval-color-scheme $scheme)
+    -set-x11 $schemeEval
+    if $gnomeTerminal {
         try {
-            -set-gnome-terminal $scheme-eval
+            -set-gnome-terminal $schemeEval
         } except _ {
             # Ignore errors
         }

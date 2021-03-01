@@ -41,11 +41,11 @@ fn hex-to-rgb [x]{
 }
 
 fn -base16 [int]{
-    b16 = (base 16 $int)
+    var b16 = (base 16 $int)
 
     # 00 gets truncated to 0
     if (< (count $b16) 2) {
-        b16 = '0'$b16
+        set b16 = '0'$b16
     }
 
     put $b16
@@ -63,11 +63,11 @@ fn reset-x11 {
 }
 
 fn -set-gnome-terminal [scheme]{
-    profile = [ (e:dconf list '/org/gnome/terminal/legacy/profiles:/') ]
+    var profile = [ (e:dconf list '/org/gnome/terminal/legacy/profiles:/') ]
     if (> (count $profile) 1) {
         fail "We don't have a way to differentiate gnome-terminal profiles."
     } else {
-        profile = $profile[0]
+        set profile = $profile[0]
     }
 
     try {
@@ -84,12 +84,12 @@ fn -set-gnome-terminal [scheme]{
     } except _ {
         fail 'dconf failed to set foreground-color'
     }
-    palette = [ ]
+    var palette = [ ]
     for i [ (keys $scheme) ] {
         if (has-value [ bg fg ] $i) {
             continue
         }
-        palette = [
+        set palette = [
             $@palette
             "'rgb("$scheme[$i][r]','$scheme[$i][g]','$scheme[$i][b]")'"
         ]
@@ -128,27 +128,27 @@ fn -set-x11 [scheme]{
 #   &15=6
 # ]
 fn -eval-color-scheme [scheme]{
-    schemeEval = [&]
-    schemeMapped = [ ]
+    var schemeEval = [&]
+    var schemeMapped = [ ]
     # Manually define keys to ensure they all exist
     for i [ (range 16 | each [a]{to-string $a}) bg fg ] {
-        rgb = $scheme[$i]
+        var rgb = $scheme[$i]
 
         # Allow re-assigning values. Since we only accept RGB as a map,
         # any string is assumed to be a valid key.
         if (==s (kind-of $rgb) 'string') {
-            schemeMapped = [ $@schemeMapped $i ]
+            set schemeMapped = [ $@schemeMapped $i ]
             continue
         }
 
         -validate-rgb $rgb
 
-        schemeEval[$i] = $rgb
+        set schemeEval[$i] = $rgb
     }
     # Mapped assignments have to be processed after their targets have been
     # eval'd
     for i $schemeMapped {
-        schemeEval[$i] = $schemeEval[$scheme[$i]]
+        set schemeEval[$i] = $schemeEval[$scheme[$i]]
     }
 
     put $schemeEval
@@ -157,14 +157,14 @@ fn -eval-color-scheme [scheme]{
 fn set [scheme]{
     # TODO: Attempt to automatically set DBUS_SESSION_BUS_ADDRESS to work even
     #       when displays are not connected.
-    gnomeTerminal = $false
+    var gnomeTerminal = $false
     if (and (has-env DISPLAY) ^
             (has-external gnome-terminal) ^
             (has-external dconf)) {
-        gnomeTerminal = $true
+        set gnomeTerminal = $true
     }
 
-    schemeEval = (-eval-color-scheme $scheme)
+    var schemeEval = (-eval-color-scheme $scheme)
     -set-x11 $schemeEval
     if $gnomeTerminal {
         try {

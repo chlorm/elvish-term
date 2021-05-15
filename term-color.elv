@@ -55,7 +55,7 @@ fn -base16 [int]{
 fn rgb-to-hex [rgb]{
     -validate-rgb $rgb
 
-    put '#'(-base16 $rgb[r])(-base16 $rgb[g])(-base16 $rgb[b])
+    put '#'(-base16 $rgb['r'])(-base16 $rgb['g'])(-base16 $rgb['b'])
 }
 
 fn reset-x11 {
@@ -63,7 +63,7 @@ fn reset-x11 {
 }
 
 fn -set-gnome-terminal [scheme]{
-    var profile = [ (e:dconf list '/org/gnome/terminal/legacy/profiles:/') ]
+    var profile = [ (e:dconf 'list' '/org/gnome/terminal/legacy/profiles:/') ]
     if (> (count $profile) 1) {
         fail "We don't have a way to differentiate gnome-terminal profiles."
     } else {
@@ -71,31 +71,31 @@ fn -set-gnome-terminal [scheme]{
     }
 
     try {
-        e:dconf write \
+        e:dconf 'write' \
             '/org/gnome/terminal/legacy/profiles:/'$profile'background-color' ^
-            "'rgb("$scheme[bg][r]','$scheme[bg][g]','$scheme[bg][b]")'"
+            "'rgb("$scheme['bg']['r']','$scheme['bg']['g']','$scheme['bg']['b']")'"
     } except _ {
         fail 'dconf failed to set background-color'
     }
     try {
-        e:dconf write ^
+        e:dconf 'write' ^
             '/org/gnome/terminal/legacy/profiles:/'$profile'foreground-color' ^
-            "'rgb("$scheme[fg][r]','$scheme[fg][g]','$scheme[fg][b]")'"
+            "'rgb("$scheme['fg']['r']','$scheme['fg']['g']','$scheme['fg']['b']")'"
     } except _ {
         fail 'dconf failed to set foreground-color'
     }
     var palette = [ ]
     for i [ (keys $scheme) ] {
-        if (has-value [ bg fg ] $i) {
+        if (has-value [ 'bg' 'fg' ] $i) {
             continue
         }
         set palette = [
             $@palette
-            "'rgb("$scheme[$i][r]','$scheme[$i][g]','$scheme[$i][b]")'"
+            "'rgb("$scheme[$i]['r']','$scheme[$i]['g']','$scheme[$i]['b']")'"
         ]
     }
     try {
-        e:dconf write ^
+        e:dconf 'write' ^
             '/org/gnome/terminal/legacy/profiles:/'$profile'palette' ^
             '['(str:join ', ' $palette)']'
     } except _ {
@@ -108,8 +108,8 @@ fn -x11-hex [hex]{
 }
 
 fn -set-x11 [scheme]{
-    print "\033]11;rgb:"(-x11-hex (rgb-to-hex $scheme[bg]))"\a"
-    print "\033]10;rgb:"(-x11-hex (rgb-to-hex $scheme[fg]))"\a"
+    print "\033]11;rgb:"(-x11-hex (rgb-to-hex $scheme['bg']))"\a"
+    print "\033]10;rgb:"(-x11-hex (rgb-to-hex $scheme['fg']))"\a"
     for i [ (keys $scheme) ] {
         if (has-value [ bg fg ] $i) {
             continue
@@ -158,9 +158,9 @@ fn set [scheme]{
     # TODO: Attempt to automatically set DBUS_SESSION_BUS_ADDRESS to work even
     #       when displays are not connected.
     var gnomeTerminal = $false
-    if (and (has-env DISPLAY) ^
-            (has-external gnome-terminal) ^
-            (has-external dconf)) {
+    if (and (has-env 'DISPLAY') ^
+            (has-external 'gnome-terminal') ^
+            (has-external 'dconf')) {
         set gnomeTerminal = $true
     }
 

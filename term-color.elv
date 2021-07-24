@@ -22,7 +22,7 @@ use str
 fn -validate-rgb [x]{
     for i [ (keys $x) ] {
         if (or (< $x[$i] 0) (> $x[$i] 255)) {
-            fail 'Invalid RGB decimal range'
+            fail 'RGB decimal out of range'
         }
     }
 }
@@ -111,7 +111,7 @@ fn -set-x11 [scheme]{
     print "\033]11;rgb:"(-x11-hex (rgb-to-hex $scheme['bg']))"\a"
     print "\033]10;rgb:"(-x11-hex (rgb-to-hex $scheme['fg']))"\a"
     for i [ (keys $scheme) ] {
-        if (has-value [ bg fg ] $i) {
+        if (has-value [ 'bg' 'fg' ] $i) {
             continue
         }
         # X11 only supports hex

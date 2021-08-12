@@ -16,6 +16,7 @@
 # Methods for defining the colors used by ANSI 0-15 color codes.
 
 
+use re
 use str
 
 
@@ -58,7 +59,7 @@ fn rgb-to-hex [rgb]{
     put '#'(-base16 $rgb['r'])(-base16 $rgb['g'])(-base16 $rgb['b'])
 }
 
-fn reset-x11 {
+fn reset-terminfo {
     print "\033]104\a"
 }
 
@@ -103,19 +104,34 @@ fn -set-gnome-terminal [scheme]{
     }
 }
 
-fn -x11-hex [hex]{
+fn -terminfo-hex [rgb]{
+    var hex = (rgb-to-hex $rgb)
     put $hex[1..3]'/'$hex[3..5]'/'$hex[5..7]
 }
 
-fn -set-x11 [scheme]{
-    print "\033]11;rgb:"(-x11-hex (rgb-to-hex $scheme['bg']))"\a"
-    print "\033]10;rgb:"(-x11-hex (rgb-to-hex $scheme['fg']))"\a"
+# see: terminfo(5) initialize_color/initc
+fn -set-terminfo [scheme]{
+    # Fallback escape sequence
+    var esc = "\033]4;0;rgb:00/00/00\a"
+    try {
+        # NOTE: `tput initc` seems to use the hex value of the nearest
+        #        color in `tput colors` even when truecolor is supported.
+        #        So we only use it to find the correct escape sequence.
+        # FIXME: make sure this doesn't pass for terminals with a different
+        #        pattern.
+        set esc = (e:tput initc 0 0 0 0)
+    } except _ { }
+
+    var s = '0;rgb:00/00/00'
+    print (re:replace '4;'$s '11;rgb:'(-terminfo-hex $scheme['bg']) $esc)
+    print (re:replace '4;'$s '10;rgb:'(-terminfo-hex $scheme['fg']) $esc)
+
     for i [ (keys $scheme) ] {
         if (has-value [ 'bg' 'fg' ] $i) {
             continue
         }
-        # X11 only supports hex
-        print "\033]4;"$i";rgb:"(-x11-hex (rgb-to-hex $scheme[$i]))"\a"
+
+        print (re:replace $s $i';rgb:'(-terminfo-hex $scheme[$i]) $esc)
     }
 }
 
@@ -165,7 +181,7 @@ fn set [scheme]{
     }
 
     var schemeEval = (-eval-color-scheme $scheme)
-    -set-x11 $schemeEval
+    -set-terminfo $schemeEval
     if $gnomeTerminal {
         try {
             -set-gnome-terminal $schemeEval

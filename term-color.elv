@@ -18,6 +18,7 @@
 
 use re
 use str
+use github.com/chlorm/elvish-stl/wrap
 
 
 fn -validate-rgb [x]{
@@ -64,7 +65,9 @@ fn reset-terminfo {
 }
 
 fn -set-gnome-terminal [scheme]{
-    var profile = [ (e:dconf 'list' '/org/gnome/terminal/legacy/profiles:/') ]
+    var profile = [(
+        wrap:cmd-out 'dconf' 'list' '/org/gnome/terminal/legacy/profiles:/'
+    )]
     if (> (count $profile) 1) {
         fail "We don't have a way to differentiate gnome-terminal profiles."
     } else {
@@ -72,14 +75,14 @@ fn -set-gnome-terminal [scheme]{
     }
 
     try {
-        e:dconf 'write' \
+        wrap:cmd 'dconf' 'write' \
             '/org/gnome/terminal/legacy/profiles:/'$profile'background-color' ^
             "'rgb("$scheme['bg']['r']','$scheme['bg']['g']','$scheme['bg']['b']")'"
     } except _ {
         fail 'dconf failed to set background-color'
     }
     try {
-        e:dconf 'write' ^
+        wrap:cmd 'dconf' 'write' ^
             '/org/gnome/terminal/legacy/profiles:/'$profile'foreground-color' ^
             "'rgb("$scheme['fg']['r']','$scheme['fg']['g']','$scheme['fg']['b']")'"
     } except _ {
@@ -96,7 +99,7 @@ fn -set-gnome-terminal [scheme]{
         ]
     }
     try {
-        e:dconf 'write' ^
+        wrap:cmd 'dconf' 'write' ^
             '/org/gnome/terminal/legacy/profiles:/'$profile'palette' ^
             '['(str:join ', ' $palette)']'
     } except _ {
@@ -119,7 +122,7 @@ fn -set-terminfo [scheme]{
         #        So we only use it to find the correct escape sequence.
         # FIXME: make sure this doesn't pass for terminals with a different
         #        pattern.
-        set esc = (e:tput initc 0 0 0 0)
+        set esc = (wrap:cmd-out 'tput' 'initc' 0 0 0 0)
     } except _ { }
 
     var s = '0;rgb:00/00/00'

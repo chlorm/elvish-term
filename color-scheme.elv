@@ -146,7 +146,7 @@ fn -eval-color-scheme [colorScheme]{
         set colorSchemeEval[$i] = $colorSchemeEval[$colorScheme[$i]]
     }
 
-    put $schemeEval
+    put $colorSchemeEval
 }
 
 fn set [colorScheme]{

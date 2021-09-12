@@ -1,31 +1,31 @@
-# elvish-term-color
+# elvish-term
 
-###### An [Elvish](https://elv.sh) module to define terminal colors.
+###### An [Elvish](https://elv.sh) module to providing terminal related functions and constants.
 
 ```elvish
-epm:install github.com/chlorm/elvish-term-color
-use github.com/chlorm/elvish-term-color/term-color
+epm:install github.com/chlorm/elvish-term
+use github.com/chlorm/elvish-term/color-scheme
 
 monokai = [
-  &0=(term-color:hex-to-rgb '#272822')
-  &1=(term-color:hex-to-rgb '#f92672')
-  &2=(term-color:hex-to-rgb '#a6e22e')
-  &3=(term-color:hex-to-rgb '#e6db74')
-  &4=(term-color:hex-to-rgb '#2196e8')
-  &5=(term-color:hex-to-rgb '#ae81ff')
-  &6=(term-color:hex-to-rgb '#66d9ef')
-  &7=(term-color:hex-to-rgb '#f8f8f2')
-  &8=(term-color:hex-to-rgb '#75715e')
-  &9=(term-color:hex-to-rgb '#fd971f')
+  &0=(rgb:hex-to-dec (rgb:hexstr-to-map '#272822'))
+  &1=(rgb:hex-to-dec (rgb:hexstr-to-map '#f92672'))
+  &2=(rgb:hex-to-dec (rgb:hexstr-to-map '#a6e22e'))
+  &3=(rgb:hex-to-dec (rgb:hexstr-to-map '#e6db74'))
+  &4=(rgb:hex-to-dec (rgb:hexstr-to-map '#2196e8'))
+  &5=(rgb:hex-to-dec (rgb:hexstr-to-map '#ae81ff'))
+  &6=(rgb:hex-to-dec (rgb:hexstr-to-map '#66d9ef'))
+  &7=(rgb:hex-to-dec (rgb:hexstr-to-map '#f8f8f2'))
+  &8=(rgb:hex-to-dec (rgb:hexstr-to-map '#75715e'))
+  &9=(rgb:hex-to-dec (rgb:hexstr-to-map '#fd971f'))
   &10=2
   &11=3
   &12=4
   &13=5
   &14=6
-  &15=(term-color:hex-to-rgb '#f8f8f0')
-  &bg=(term-color:hex-to-rgb '#282828')
-  &fg=(term-color:hex-to-rgb '#f8f8f2')
+  &15=(rgb:hex-to-dec (rgb:hexstr-to-map '#f8f8f0'))
+  &bg=(rgb:hex-to-dec (rgb:hexstr-to-map '#282828'))
+  &fg=(rgb:hex-to-dec (rgb:hexstr-to-map '#f8f8f2'))
 ]
 
-term-color:set $monokai
+color-scheme:set (color-scheme:monokai)
 ```

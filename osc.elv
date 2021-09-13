@@ -17,42 +17,41 @@ use github.com/chlorm/elvish-term/ansi
 use github.com/chlorm/elvish-term/rgb
 
 
-fn reset {
-    printf "%s%s104%s" ^
-        $ansi:ESC ^
-        $ansi:OSC ^
-        $ansi:ST
-}
-
 # Terminfo represents hexidecimal RGB as 00/00/00.
 fn -dec-to-ti-hex [decRgbMap]{
     var hexRgbMap = (rgb:dec-to-hex $decRgbMap)
     printf '%s/%s/%s' $hexRgbMap['r'] $hexRgbMap['g'] $hexRgbMap['b']
 }
 
-# See: terminfo(5) initialize_color/initc
-fn init-color [colorIndex decRgbMap]{
-    printf "%s%s4;%s;rgb:%s%s" ^
+fn osc [cmd]{
+    printf "%s%s%s%s" ^
         $ansi:ESC ^
         $ansi:OSC ^
-        $colorIndex ^
-        (-dec-to-ti-hex $decRgbMap) ^
+        $cmd ^
         $ansi:ST
 }
 
-fn -init-fb [fb decRgbMap]{
-    printf "%s%s%s;rgb:%s%s" ^
-        $ansi:ESC ^
-        $ansi:OSC ^
-        $fb ^
-        (-dec-to-ti-hex $decRgbMap) ^
-        $ansi:ST
+fn osc-rgb [cmd decRgbMap]{
+    osc (printf "%s;rgb:%s" $cmd (-dec-to-ti-hex $decRgbMap))
+}
+
+fn reset {
+    osc '104'
+}
+
+# See: terminfo(5) initialize_color/initc
+fn init-color [colorIndex decRgbMap]{
+    osc-rgb (printf '4;%s' $colorIndex) $decRgbMap
 }
 
 fn init-background [decRgbMap]{
-    -init-fb '11' $decRgbMap
+    osc-rgb '11' $decRgbMap
 }
 
 fn init-foreground [decRgbMap]{
-    -init-fb '10' $decRgbMap
+    osc-rgb '10' $decRgbMap
+}
+
+fn init-cursor-color [decRgbMap]{
+    osc-rgb '12' $decRgbMap
 }

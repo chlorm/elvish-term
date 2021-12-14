@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-fn -validate-decimal-rgb [decRgbMap]{
+fn -validate-decimal-rgb {|decRgbMap|
     for i [ (keys $decRgbMap) ] {
         if (or (< $decRgbMap[$i] 0) (> $decRgbMap[$i] 255)) {
             fail 'RGB decimal out of range: '$decRgbMap[$i]
@@ -21,7 +21,7 @@ fn -validate-decimal-rgb [decRgbMap]{
     }
 }
 
-fn hexstr-to-map [hexStr]{
+fn hexstr-to-map {|hexStr|
     if (==s $hexStr[0..1] '#') {
         set hexStr = $hexStr[1..]
     }
@@ -38,7 +38,7 @@ fn hexstr-to-map [hexStr]{
 }
 
 # Convert hexadecimal to decimal RGB.
-fn hex-to-dec [hexRgbMap]{
+fn hex-to-dec {|hexRgbMap|
     put [
         &r=(base 10 '0x'$hexRgbMap['r'])
         &g=(base 10 '0x'$hexRgbMap['g'])
@@ -46,7 +46,7 @@ fn hex-to-dec [hexRgbMap]{
     ]
 }
 
-fn -base16 [int]{
+fn -base16 {|int|
     var b16 = (base 16 $int)
 
     # 00 gets truncated to 0
@@ -58,7 +58,7 @@ fn -base16 [int]{
 }
 
 # Convert decimal to hexadecimal RGB.
-fn dec-to-hex [decRgbMap]{
+fn dec-to-hex {|decRgbMap|
     put [
         &r=(-base16 $decRgbMap['r'])
         &g=(-base16 $decRgbMap['g'])

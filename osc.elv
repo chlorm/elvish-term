@@ -18,12 +18,12 @@ use github.com/chlorm/elvish-term/rgb
 
 
 # Terminfo represents hexidecimal RGB as 00/00/00.
-fn -dec-to-ti-hex [decRgbMap]{
+fn -dec-to-ti-hex {|decRgbMap|
     var hexRgbMap = (rgb:dec-to-hex $decRgbMap)
     printf '%s/%s/%s' $hexRgbMap['r'] $hexRgbMap['g'] $hexRgbMap['b']
 }
 
-fn osc [cmd]{
+fn osc {|cmd|
     printf "%s%s%s%s" ^
         $ansi:ESC ^
         $ansi:OSC ^
@@ -31,7 +31,7 @@ fn osc [cmd]{
         $ansi:ST
 }
 
-fn osc-rgb [cmd decRgbMap]{
+fn osc-rgb {|cmd decRgbMap|
     osc (printf "%s;rgb:%s" $cmd (-dec-to-ti-hex $decRgbMap))
 }
 
@@ -40,18 +40,18 @@ fn reset {
 }
 
 # See: terminfo(5) initialize_color/initc
-fn init-color [colorIndex decRgbMap]{
+fn init-color {|colorIndex decRgbMap|
     osc-rgb (printf '4;%s' $colorIndex) $decRgbMap
 }
 
-fn init-background [decRgbMap]{
+fn init-background {|decRgbMap|
     osc-rgb '11' $decRgbMap
 }
 
-fn init-foreground [decRgbMap]{
+fn init-foreground {|decRgbMap|
     osc-rgb '10' $decRgbMap
 }
 
-fn init-cursor-color [decRgbMap]{
+fn init-cursor-color {|decRgbMap|
     osc-rgb '12' $decRgbMap
 }

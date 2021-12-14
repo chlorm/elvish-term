@@ -20,18 +20,18 @@ use github.com/chlorm/elvish-stl/io
 use github.com/chlorm/elvish-stl/path
 
 
-fn download [file]{
+fn download {|file|
     var UCD-VERSION = '14.0.0'
     e:curl '-sL' 'https://www.unicode.org/Public/'$UCD-VERSION'/ucd/'$file
 }
 
 var MAX-CHAR-DEC = 159
 
-fn hex-to-dec [hex]{
+fn hex-to-dec {|hex|
     base 10 '0x'$hex
 }
 
-fn ucd-control-dec [line]{
+fn ucd-control-dec {|line|
     var i = [ (str:split ';' $line) ]
     var group = $i[2]
     var hexadecimal = $i[0]
@@ -63,7 +63,7 @@ fn ucd-find-ccs {
     file:close $unicodedata
 }
 
-fn create-map [list]{
+fn create-map {|list|
     var map = [&]
     for i $list {
         set map[$i] = []
@@ -71,7 +71,7 @@ fn create-map [list]{
     put $map
 }
 
-fn find-names [line]{
+fn find-names {|line|
     var i = [ (str:split ';' $line) ]
     var group = $i[2]
     var hexadecimal = $i[0]

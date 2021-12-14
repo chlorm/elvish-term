@@ -122,11 +122,11 @@ fn monokai {
 #   ...
 #   &15=6
 # ]
-fn -eval-color-scheme [colorScheme]{
+fn -eval-color-scheme {|colorScheme|
     var colorSchemeEval = [&]
     var colorSchemeMapped = [ ]
     # Manually define keys to ensure they all exist.
-    for i [ (range 16 | each [a]{to-string $a}) 'bg' 'fg' ] {
+    for i [ (range 16 | each {|a|to-string $a}) 'bg' 'fg' ] {
         var rgb = $colorScheme[$i]
 
         # Allow re-assigning values. Since we only accept RGB as a map,
@@ -149,7 +149,7 @@ fn -eval-color-scheme [colorScheme]{
     put $colorSchemeEval
 }
 
-fn set [colorScheme]{
+fn set {|colorScheme|
     set colorScheme = (-eval-color-scheme $colorScheme)
 
     osc:init-background $colorScheme['bg']

@@ -19,7 +19,8 @@ use github.com/chlorm/elvish-stl/map
 fn -validate-decimal-rgb {|decRgbMap|
     for i [ (map:keys $decRgbMap) ] {
         if (or (< $decRgbMap[$i] 0) (> $decRgbMap[$i] 255)) {
-            fail 'RGB decimal out of range: '$decRgbMap[$i]
+            var err = 'RGB decimal out of range: '$decRgbMap[$i]
+            fail $err
         }
     }
 }

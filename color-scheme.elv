@@ -13,6 +13,8 @@
 # limitations under the License.
 
 
+use github.com/chlorm/elvish-stl/list
+use github.com/chlorm/elvish-stl/map
 use github.com/chlorm/elvish-term/osc
 use github.com/chlorm/elvish-term/rgb
 
@@ -155,8 +157,8 @@ fn set {|colorScheme|
     osc:init-background $colorScheme['bg']
     osc:init-foreground $colorScheme['fg']
 
-    for i [ (keys $colorScheme) ] {
-        if (has-value [ 'bg' 'fg' ] $i) {
+    for i [ (map:keys $colorScheme) ] {
+        if (list:has [ 'bg' 'fg' ] $i) {
             continue
         }
 

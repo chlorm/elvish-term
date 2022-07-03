@@ -13,8 +13,11 @@
 # limitations under the License.
 
 
+use github.com/chlorm/elvish-stl/map
+
+
 fn -validate-decimal-rgb {|decRgbMap|
-    for i [ (keys $decRgbMap) ] {
+    for i [ (map:keys $decRgbMap) ] {
         if (or (< $decRgbMap[$i] 0) (> $decRgbMap[$i] 255)) {
             fail 'RGB decimal out of range: '$decRgbMap[$i]
         }

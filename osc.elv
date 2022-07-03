@@ -15,6 +15,7 @@
 
 use github.com/chlorm/elvish-term/ansi
 use github.com/chlorm/elvish-term/rgb
+use github.com/chlorm/elvish-stl/platform
 
 
 # Terminfo represents hexidecimal RGB as 00/00/00.
@@ -24,11 +25,21 @@ fn -dec-to-ti-hex {|decRgbMap|
 }
 
 fn osc {|cmd|
-    printf "%s%s%s%s" ^
-        $ansi:ESC ^
-        $ansi:OSC ^
-        $cmd ^
-        $ansi:ST
+    if $platform:is-windows {
+        # FIXME: Investigate why windows terminal doesn't interpret OSC
+        #        or why BEL is used instead of ST.
+        printf "%s%s%s%s" ^
+            $ansi:ESC ^
+            ']' ^
+            $cmd ^
+            $ansi:BEL
+    } else {
+        printf "%s%s%s%s" ^
+            $ansi:ESC ^
+            $ansi:OSC ^
+            $cmd ^
+            $ansi:ST
+    }
 }
 
 fn osc-rgb {|cmd decRgbMap|

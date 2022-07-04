@@ -27,11 +27,9 @@ fn osc {|cmd|
     # This uses C0 control codes for portability.  Windows does not interpret
     # C1 control codes.
     printf "%s%s%s%s%s" ^
-        $ansi:ESC ^
-        ']' ^
+        $ansi:ESC ']' ^
         $cmd ^
-        $ansi:ESC ^
-        '\'
+        $ansi:ESC '\'
 }
 
 fn osc-rgb {|cmd decRgbMap|

@@ -1,4 +1,4 @@
-# Copyright (c) 2018, 2020-2021, Cody Opel <cwopel@chlorm.net>
+# Copyright (c) 2018, 2020-2022, Cody Opel <cwopel@chlorm.net>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
 # limitations under the License.
 
 
+# https://invisible-island.net/xterm/ctlseqs/ctlseqs.txt
+
+
 use github.com/chlorm/elvish-term/ansi
 use github.com/chlorm/elvish-term/rgb
 
@@ -23,7 +26,7 @@ fn -dec-to-ti-hex {|decRgbMap|
     printf '%s/%s/%s' $hexRgbMap['r'] $hexRgbMap['g'] $hexRgbMap['b']
 }
 
-fn osc {|cmd|
+fn -osc {|cmd|
     # This uses C0 control codes for portability.  Windows does not interpret
     # C1 control codes.
     printf "%s%s%s%s%s" ^
@@ -32,27 +35,81 @@ fn osc {|cmd|
         $ansi:ESC '\'
 }
 
-fn osc-rgb {|cmd decRgbMap|
-    osc (printf "%s;rgb:%s" $cmd (-dec-to-ti-hex $decRgbMap))
+fn -set-color {|cmd decRgbMap|
+    -osc (printf "%s;rgb:%s" $cmd (-dec-to-ti-hex $decRgbMap))
 }
 
-fn reset {
-    osc '104'
+# TODO: return decRgbMap
+fn -get-color {|cmd|
+    -osc (printf '%s;?' $cmd)
 }
 
-# See: terminfo(5) initialize_color/initc
-fn init-color {|colorIndex decRgbMap|
-    osc-rgb (printf '4;%s' $colorIndex) $decRgbMap
+# 1
+fn set-icon-name {|icon|
+    -osc (printf '%s;%s' 1 $icon)
 }
 
-fn init-background {|decRgbMap|
-    osc-rgb '11' $decRgbMap
+# 2
+fn set-window-title {|title|
+    -osc (printf '%s;%s' 2 $title)
 }
 
-fn init-foreground {|decRgbMap|
-    osc-rgb '10' $decRgbMap
+# 4
+fn set-base-color {|colorIndex decRgbMap|
+    -set-color (printf '%s;%s' 4 $colorIndex) $decRgbMap
+}
+fn get-base-color {|colorIndex|
+    -get-color (printf '%s;%s' 4 $colorIndex)
 }
 
-fn init-cursor-color {|decRgbMap|
-    osc-rgb '12' $decRgbMap
+# 10
+fn set-foreground-color {|decRgbMap|
+    -set-color 10 $decRgbMap
+}
+fn get-foreground-color {
+    -get-color 10
+}
+
+# 11
+fn set-background-color {|decRgbMap|
+    -set-color 11 $decRgbMap
+}
+fn get-background-color {
+    -get-color 11
+}
+
+# 12
+fn set-cursor-color {|decRgbMap|
+    -set-color 12 $decRgbMap
+}
+fn get-cursor-color {
+    -get-color 12
+}
+
+# 50
+# FIXME: check correct syntax
+fn set-font {|font|
+    -osc (printf '%s;%s' 50 $font)
+}
+
+# TODO: 52
+
+# 104
+fn reset-base-colors {
+    -osc 104
+}
+
+# 110
+fn reset-forground-color {
+    -osc 110
+}
+
+# 111
+fn reset-background-color {
+    -osc 111
+}
+
+# 112
+fn reset-cursor-color {
+    -osc 112
 }

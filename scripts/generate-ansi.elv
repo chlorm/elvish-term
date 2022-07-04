@@ -15,9 +15,9 @@
 
 use file
 use path path_
-use str
 use github.com/chlorm/elvish-stl/io
 use github.com/chlorm/elvish-stl/path
+use github.com/chlorm/elvish-stl/str
 
 
 fn download {|file|
@@ -129,7 +129,7 @@ fn generate-file {
     for i [ (keys $chars) ] {
         for x $chars[$i][1..] {
             # Drop secondary names
-            if (or (str:contains $x ' ') (str:contains $x '-')) {
+            if (or (str:has $x ' ') (str:has $x '-')) {
                 continue
             }
             printf "# %s\nvar %s = \"\\u%s\"\n" $chars[$i][0] $x $i >> '../ansi.elv'

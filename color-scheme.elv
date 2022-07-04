@@ -154,14 +154,14 @@ fn -eval-color-scheme {|colorScheme|
 fn set {|colorScheme|
     set colorScheme = (-eval-color-scheme $colorScheme)
 
-    osc:init-background $colorScheme['bg']
-    osc:init-foreground $colorScheme['fg']
+    osc:set-background-color $colorScheme['bg']
+    osc:set-foreground-color $colorScheme['fg']
 
     for i [ (map:keys $colorScheme) ] {
         if (list:has [ 'bg' 'fg' ] $i) {
             continue
         }
 
-        osc:init-color $i $colorScheme[$i]
+        osc:set-base-color $i $colorScheme[$i]
     }
 }

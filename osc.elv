@@ -16,6 +16,7 @@
 # https://invisible-island.net/xterm/ctlseqs/ctlseqs.txt
 
 
+use github.com/chlorm/elvish-stl/re
 use github.com/chlorm/elvish-term/ansi
 use github.com/chlorm/elvish-term/rgb
 
@@ -39,9 +40,58 @@ fn -set-color {|cmd decRgbMap|
     -osc (printf "%s;rgb:%s" $cmd (-dec-to-ti-hex $decRgbMap))
 }
 
-# TODO: return decRgbMap
+# FIXME: elvish doesn't seem to have a builtin way to capture an evaluated
+#        response from the terminal.
+fn -get-raw-terminal-osc-response {|osc|
+    var response = $nil
+    try {
+        var t = (
+            sh -c '
+                set -e
+                elvish_term_osc_get_response() {
+                    elvishTermOscSttySettings="$(stty -g)"
+                    # Response can only be captured in raw mode.
+                    stty raw -echo
+                    printf "\u001B]'$osc'\u001B\\" >/dev/tty
+                    read -r -d ''\'' elvishTermOscResponse
+                    stty $elvishTermOscSttySettings
+                    printf "$elvishTermOscResponse" | cat -v
+                }
+                elvish_term_osc_get_response
+            '
+        )
+        set response = $t
+    } catch _ {
+        fail
+    }
+
+    if (eq $response $nil) {
+        fail
+    }
+
+    put $response
+}
+
+# TODO: Maybe support rgba, not sure if anything common returns this, but it exists.
+# TODO: See if any terminals return decimal RGB.
 fn -get-color {|cmd|
-    -osc (printf '%s;?' $cmd)
+    var raw = (-get-raw-terminal-osc-response (printf '%s;?' $cmd))
+    var d = '([a-fA-F0-9]{2,4})'
+    var parsedRgbList = (re:finds 'rgb\:'$d'/'$d'/'$d $raw)
+    var unknownRgbMap = [
+        &r=$parsedRgbList[0]
+        &g=$parsedRgbList[1]
+        &b=$parsedRgbList[2]
+    ]
+    var decRgbMap = (
+        # Truncate all hex RGB values to 2 digits.
+        rgb:hex-to-dec [
+            &r=$unknownRgbMap['r'][0..2]
+            &g=$unknownRgbMap['g'][0..2]
+            &b=$unknownRgbMap['b'][0..2]
+        ]
+    )
+    put $decRgbMap
 }
 
 # 1

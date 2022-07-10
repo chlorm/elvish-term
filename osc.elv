@@ -56,6 +56,7 @@ fn -set-color {|cmd decRgbMap|
 
 # FIXME: elvish doesn't seem to have a builtin way to capture an evaluated
 #        response from the terminal.
+# Sends an escape sequence to a terminal and captures the terminals response.
 fn -get-raw-terminal-osc-response {|osc|
     var response = $nil
     try {
@@ -86,8 +87,7 @@ fn -get-raw-terminal-osc-response {|osc|
     put $response
 }
 
-# TODO: Maybe support rgba, not sure if anything common returns this, but it exists.
-# TODO: See if any terminals return decimal RGB.
+# Parses an OSC color string and returns an RGB map.
 fn -get-color {|cmd|
     var raw = (-get-raw-terminal-osc-response (printf '%s;?' $cmd))
     var decRgbMap = (-ti-hex-to-dec $raw)

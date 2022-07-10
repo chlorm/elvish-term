@@ -27,6 +27,20 @@ fn -dec-to-ti-hex {|decRgbMap|
     printf '%s/%s/%s' $hexRgbMap['r'] $hexRgbMap['g'] $hexRgbMap['b']
 }
 
+# TODO: Maybe support rgba, not sure if anything common returns this, but it exists.
+fn -ti-hex-to-dec {|tiHexStr|
+    var d = '([a-fA-F0-9]{2,4})'
+    var parsedRgbList = (re:finds 'rgb\:'$d'/'$d'/'$d $tiHexStr)
+    var decRgbMap = (
+        rgb:hex-to-dec [
+            &r=$parsedRgbList[0]
+            &g=$parsedRgbList[1]
+            &b=$parsedRgbList[2]
+        ]
+    )
+    put $decRgbMap
+}
+
 fn -osc {|cmd|
     # This uses C0 control codes for portability.  Windows does not interpret
     # C1 control codes.
@@ -76,21 +90,7 @@ fn -get-raw-terminal-osc-response {|osc|
 # TODO: See if any terminals return decimal RGB.
 fn -get-color {|cmd|
     var raw = (-get-raw-terminal-osc-response (printf '%s;?' $cmd))
-    var d = '([a-fA-F0-9]{2,4})'
-    var parsedRgbList = (re:finds 'rgb\:'$d'/'$d'/'$d $raw)
-    var unknownRgbMap = [
-        &r=$parsedRgbList[0]
-        &g=$parsedRgbList[1]
-        &b=$parsedRgbList[2]
-    ]
-    var decRgbMap = (
-        # Truncate all hex RGB values to 2 digits.
-        rgb:hex-to-dec [
-            &r=$unknownRgbMap['r'][0..2]
-            &g=$unknownRgbMap['g'][0..2]
-            &b=$unknownRgbMap['b'][0..2]
-        ]
-    )
+    var decRgbMap = (-ti-hex-to-dec $raw)
     put $decRgbMap
 }
 

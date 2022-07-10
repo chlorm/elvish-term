@@ -43,10 +43,11 @@ fn hexstr-to-map {|hexStr|
 
 # Convert hexadecimal to decimal RGB.
 fn hex-to-dec {|hexRgbMap|
+    # Truncate all hex RGB values to 2 digits.
     put [
-        &r=(base 10 '0x'$hexRgbMap['r'])
-        &g=(base 10 '0x'$hexRgbMap['g'])
-        &b=(base 10 '0x'$hexRgbMap['b'])
+        &r=(base 10 '0x'$hexRgbMap['r'][0..2])
+        &g=(base 10 '0x'$hexRgbMap['g'][0..2])
+        &b=(base 10 '0x'$hexRgbMap['b'][0..2])
     ]
 }
 

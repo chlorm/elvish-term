@@ -69,3 +69,12 @@ fn dec-to-hex {|decRgbMap|
         &b=(-base16 $decRgbMap['b'])
     ]
 }
+
+# ITU-R BT.709 Section 3.2
+fn get-luma {|decRgbMap|
+    var r = (* 0.2126 $decRgbMap['r'])
+    var g = (* 0.7152 $decRgbMap['g'])
+    var b = (* 0.0722 $decRgbMap['b'])
+    var luma = (+ $r $g $b)
+    put $luma
+}

@@ -68,7 +68,7 @@ fn -get-raw-terminal-osc-response {|osc|
                     # Response can only be captured in raw mode.
                     stty raw -echo
                     printf "\u001B]'$osc'\u001B\\" >/dev/tty
-                    read -r -d ''\'' elvishTermOscResponse
+                    read -r -t 1 -d ''\'' elvishTermOscResponse
                     stty $elvishTermOscSttySettings
                     printf "$elvishTermOscResponse" | cat -v
                 }

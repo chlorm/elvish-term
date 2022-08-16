@@ -54,28 +54,19 @@ fn -set-color {|cmd decRgbMap|
     -osc (printf "%s;rgb:%s" $cmd (-dec-to-ti-hex $decRgbMap))
 }
 
-# FIXME: elvish doesn't seem to have a builtin way to capture an evaluated
-#        response from the terminal.
 # Sends an escape sequence to a terminal and captures the terminals response.
 fn -get-raw-terminal-osc-response {|osc|
     var response = $nil
     try {
         var t = (
-            sh -c '
-                set -e
-                elvish_term_osc_get_response() {
-                    elvishTermOscSttySettings="$(stty -g)"
-                    # Response can only be captured in raw mode.
-                    set +e
-                    stty raw -echo
-                    printf "\u001B]'$osc'\u001B\\" >/dev/tty
-                    read -r -t 1 -d ''\'' elvishTermOscResponse
-                    stty $elvishTermOscSttySettings
-                    set -e
-                    printf "$elvishTermOscResponse" | cat -v
-                }
-                elvish_term_osc_get_response
-            '
+            var sttySettings = (e:stty -g)
+            try {
+                e:stty -echo raw
+                printf "\u001B]%s\u001B\\" $osc >/dev/tty
+                read-upto '\' </dev/tty
+            } finally {
+                e:stty $sttySettings
+            }
         )
         set response = $t
     } catch _ {

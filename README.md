@@ -1,6 +1,6 @@
 # elvish-term
 
-###### An [Elvish](https://elv.sh) module to providing terminal related functions and constants.
+###### An [Elvish](https://elv.sh) module that provides terminal related functions and constants.
 
 ```elvish
 epm:install github.com/chlorm/elvish-term

@@ -1,5 +1,5 @@
 use github.com/chlorm/elvish-stl/test
-use github.com/chlorm/elvish-term/rgb
+use ./rgb
 
 
 test:pass { rgb:-validate-decimal-rgb [ &r=255 &g=255 &b=255 ]}

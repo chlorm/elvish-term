@@ -17,8 +17,8 @@
 
 
 use github.com/chlorm/elvish-stl/re
-use github.com/chlorm/elvish-term/ansi
-use github.com/chlorm/elvish-term/rgb
+use ./ansi
+use ./rgb
 
 
 # Terminfo represents hexidecimal RGB as 00/00/00.

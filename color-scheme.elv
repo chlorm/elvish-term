@@ -15,8 +15,8 @@
 
 use github.com/chlorm/elvish-stl/list
 use github.com/chlorm/elvish-stl/map
-use github.com/chlorm/elvish-term/osc
-use github.com/chlorm/elvish-term/rgb
+use ./osc
+use ./rgb
 
 
 # https://github.com/JesseLeite/an-old-hope-syntax-atom

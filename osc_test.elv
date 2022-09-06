@@ -1,4 +1,4 @@
-use github.com/chlorm/elvish-term/osc
+use ./osc
 use github.com/chlorm/elvish-stl/test
 
 test:assert {

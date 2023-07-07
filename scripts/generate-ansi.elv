@@ -46,7 +46,7 @@ fn ucd-control-dec {|line|
 fn ucd-find-ccs {
     var unicodedata = (path_:temp-file)
     download 'UnicodeData.txt' > $unicodedata
-    var ucd = [ (io:cat $unicodedata[name]) ]
+    var ucd = [ (str:to-nonempty-lines (io:open $unicodedata[name])) ]
     for i $ucd {
         var dec = (ucd-control-dec $i)
         if (eq $dec $nil) {
@@ -90,7 +90,7 @@ fn map-names {
 
     var control-chars-map = (create-map $control-chars)
 
-    for line [ (io:cat $namealiases[name]) ] {
+    for line [ (str:to-nonempty-lines (io:cat $namealiases[name])) ] {
         echo $line >&2
         if (or (str:has-prefix $line '#') (==s $line '')) {
             continue

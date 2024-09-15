@@ -165,3 +165,7 @@ fn reset-background-color {
 fn reset-cursor-color {
     -osc 112
 }
+
+fn clear {
+    printf "\033c"
+}
